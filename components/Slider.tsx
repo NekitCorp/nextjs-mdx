@@ -42,6 +42,8 @@ const StyledSlideContent = styled.a`
 const StyledImage = styled.img`
     position: absolute;
     width: 100%;
+    height: 100%;
+    object-fit: cover;
 `;
 
 const StyledTitleContainer = styled.div`
@@ -52,12 +54,18 @@ const StyledTitleContainer = styled.div`
     padding: 0 16px;
 
     & h2 {
-        font-size: 3vw;
-        margin: 24px 0;
+        font-size: 3rem;
+        margin: 36px 0;
     }
 
     & p {
-        font-size: 1vw;
+        font-size: 1rem;
+    }
+
+    @media screen and (min-width: 900px) {
+        & h2 {
+            font-size: 4rem;
+        }
     }
 `;
 
