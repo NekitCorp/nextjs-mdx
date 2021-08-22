@@ -1,5 +1,7 @@
 # nextjs-mdx
 
+[Demo](https://nekitcorp.github.io/nextjs-mdx)
+
 Features:
 
 -   [MDX](https://mdxjs.com/)
