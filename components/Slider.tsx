@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
@@ -14,6 +13,7 @@ const StyledSlideContent = styled.a`
     align-items: center;
     justify-content: center;
     text-decoration: none;
+    position: relative;
 
     &::after {
         content: "";
@@ -37,6 +37,11 @@ const StyledSlideContent = styled.a`
             background-color: rgba(0, 0, 0, 0.7);
         }
     }
+`;
+
+const StyledImage = styled.img`
+    position: absolute;
+    width: 100%;
 `;
 
 const StyledTitleContainer = styled.div`
@@ -92,7 +97,7 @@ const Slider: React.FC<ISliderProps> = ({ className, slides }) => {
                 <SwiperSlide key={index}>
                     <Link href={slide.href} passHref>
                         <StyledSlideContent>
-                            <Image src={slide.src} alt={slide.alt} layout="fill" objectFit="fill" />
+                            <StyledImage src={slide.src} alt={slide.alt} />
                             <StyledTitleContainer>
                                 <h2>{slide.title}</h2>
                                 <p>{slide.description}</p>
