@@ -1,18 +1,20 @@
-import fs from "fs";
 import matter from "gray-matter";
 import type { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
+import dynamic from "next/dynamic";
 import Head from "next/head";
-import path from "path";
-import { CustomLink } from "../components/CustomLink";
-import { Test } from "../components/Test";
-import { contentFilePaths, CONTENT_PATH } from "../utils/mdxUtils";
+import { CustomLink } from "../components";
+import { getContentSlugs, getFileContent } from "../utils/mdxUtils";
+
+const DynamicSliderWithNoSSR = dynamic(() => import("../components/Slider"), {
+    ssr: false,
+});
 
 const components = {
     a: CustomLink,
     Head,
-    Test,
+    Slider: DynamicSliderWithNoSSR,
 };
 
 type PageProps = {
@@ -32,25 +34,12 @@ const Page: NextPage<PageProps> = ({ frontMatter, source }) => {
     );
 };
 
-export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
-    const postFilePath = path.join(CONTENT_PATH, `${params?.slug}.mdx`);
-
-    // if (!fs.existsSync(postFilePath)) {
-    //     return { notFound: true };
-    // }
-
-    const source = fs.readFileSync(postFilePath);
+export const getStaticProps: GetStaticProps<PageProps, { slug: string[] }> = async ({ params }) => {
+    const source = getFileContent(params?.slug);
 
     const { content, data } = matter(source);
 
-    const mdxSource = await serialize(content, {
-        // Optionally pass remark/rehype plugins
-        mdxOptions: {
-            remarkPlugins: [],
-            rehypePlugins: [],
-        },
-        scope: data,
-    });
+    const mdxSource = await serialize(content, { scope: data });
 
     return {
         props: {
@@ -61,13 +50,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-    const paths = contentFilePaths
-        // Remove file extensions for page paths
-        .map((path) => path.replace(/\.mdx?$/, ""))
-        // Map the path into the static paths object required by Next.js
-        .map((slug) => ({ params: { slug: [slug] } }));
-
-    console.log(paths);
+    const paths = (await getContentSlugs()).map((slug) => ({ params: { slug } }));
 
     return {
         paths,
